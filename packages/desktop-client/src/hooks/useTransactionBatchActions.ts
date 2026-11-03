@@ -75,7 +75,7 @@ type BatchUnlinkScheduleProps = {
   onSuccess?: (ids: Array<TransactionEntity['id']>) => void;
 };
 
-export function useTransactionBatchActions() {
+export function useTransactionBatchActions(accounts?: AccountEntity[]) {
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
@@ -535,6 +535,16 @@ export function useTransactionBatchActions() {
           p => p.transfer_acct === fromTrans.account,
         );
         const toPayee = payees.find(p => p.transfer_acct === toTrans.account);
+        const fromAccount = accounts?.find(
+          account => account.id === fromTrans.account,
+        );
+        const toAccount = accounts?.find(
+          account => account.id === toTrans.account,
+        );
+        const clearCategory =
+          fromAccount != null &&
+          toAccount != null &&
+          fromAccount.offbudget === toAccount.offbudget;
 
         // Only clear the category when the transfer is between two accounts
         // of the same budget type (both on-budget or both off-budget),
